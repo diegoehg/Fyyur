@@ -5,3 +5,4 @@ flask-wtf
 psycopg2
 flask
 flask-sqlalchemy
+flask-migrate
