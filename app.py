@@ -40,10 +40,25 @@ class Venue(db.Model):
     website = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-    seeking_talent = db.Column(db.Boolean, default=False)
+    seeking_talent = db.Column(db.Boolean, default=False, nullable=False)
     seeking_description = db.Column(db.String(120))
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    def __repr__(self):
+        return f"""<Venue 
+    id:{self.id}, 
+    name:{self.name}, 
+    city:{self.city}, 
+    state:{self.state}, 
+    address:{self.address}, 
+    phone:{self.phone}, 
+    genres:{self.genres}, 
+    website:{self.website}, 
+    image_link:{self.image_link}, 
+    facebook_link:{self.facebook_link}, 
+    seeking_talent:{self.seeking_talent}, 
+    seeking_description:{self.seeking_description}
+>"""
+
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -60,9 +75,37 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean, default=False, nullable=False)
     seeking_description = db.Column(db.String(120))
 
+    def __repr__(self):
+        return f"""<Artist
+    id:{self.id},
+    name:{self.name},
+    city:{self.city},
+    state:{self.state},
+    phone:{self.phone},
+    genres:{self.genres},
+    website:{self.website},
+    image_link:{self.image_link},
+    facebook_link:{self.facebook_link},
+    seeking_venue:{self.seeking_venue},
+    seeking_description:{self.seeking_description}
+>"""
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
+class Show(db.Model):
+    __tablename__ = 'Show'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
+    artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False)
+
+    def __repr__(self):
+        return f"""<Show
+    id:{self.id},
+    venue_id:{self.venue_id},
+    artist_id:{self.artist_id},
+    start_time:{self.start_time}
+>"""
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 #----------------------------------------------------------------------------#
