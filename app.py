@@ -251,7 +251,51 @@ def show_venue(venue_id):
     "past_shows_count": 1,
     "upcoming_shows_count": 1,
   }
-  data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
+
+  v = Venue.query.get(venue_id)
+
+  data={
+    "id": v.id,
+    "name": v.name,
+    "address": v.address,
+    "city": v.city,
+    "state": v.state,
+    "phone": v.phone,
+    "website": v.website,
+    "facebook_link": v.facebook_link,
+    "seeking_talent": v.seeking_talent,
+    "image_link": v.image_link,
+    "past_shows": [{
+      "artist_id": 5,
+      "artist_name": "Matt Quevedo",
+      "artist_image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+      "start_time": "2019-06-15T23:00:00.000Z"
+    }],
+    "upcoming_shows": [{
+      "artist_id": 6,
+      "artist_name": "The Wild Sax Band",
+      "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
+      "start_time": "2035-04-01T20:00:00.000Z"
+    }, {
+      "artist_id": 6,
+      "artist_name": "The Wild Sax Band",
+      "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
+      "start_time": "2035-04-08T20:00:00.000Z"
+    }, {
+      "artist_id": 6,
+      "artist_name": "The Wild Sax Band",
+      "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
+      "start_time": "2035-04-15T20:00:00.000Z"
+    }],
+    "past_shows_count": 1,
+    "upcoming_shows_count": 1,
+  }
+
+  if v.genres != None:
+    data["genres"] = [g.strip() for g in v.genres.split(",")]
+
+  print(data)
+
   return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
