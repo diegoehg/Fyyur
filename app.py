@@ -148,13 +148,15 @@ def venues():
         {
           "id": v.id, 
           "name": v.name,
-          "num_upcoming_shows": Show.query.filter(Show.venue_id==v.id, Show.start_time>datetime.now()).count()
+          "num_upcoming_shows": len([s for s in v.shows if s.start_time > datetime.now()])
         } 
         for v in Venue.query.filter(Venue.city==c[0], Venue.state==c[1]).all()
       ]
     } 
     for c in db.session.query(Venue.city, Venue.state).group_by(Venue.city, Venue.state).all()
   ]
+
+  print(cities)
 
   return render_template('pages/venues.html', areas=cities);
 
