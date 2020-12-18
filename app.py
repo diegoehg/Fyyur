@@ -43,6 +43,7 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, default=False, nullable=False)
     seeking_description = db.Column(db.String(120))
+    shows = db.relationship('Show', backref='venue', lazy=True)
 
     def __repr__(self):
         return f"""<Venue 
@@ -75,6 +76,7 @@ class Artist(db.Model):
     facebook_link = db.Column(db.String(120))
     seeking_venue = db.Column(db.Boolean, default=False, nullable=False)
     seeking_description = db.Column(db.String(120))
+    shows = db.relationship('Show', backref='artist', lazy=True)
 
     def __repr__(self):
         return f"""<Artist
@@ -137,6 +139,7 @@ def index():
 
 @app.route('/venues')
 def venues():
+  # TODO check if this info can be recovered by joins
   cities = [
     {
       "city": c[0], 
