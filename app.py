@@ -139,41 +139,42 @@ def index():
 
 @app.route('/venues')
 def venues():
-  # TODO check if this info can be recovered by joins
   cities = [
     {
       "city": c[0], 
       "state": c[1], 
       "venues": [
-        {
-          "id": v.id, 
-          "name": v.name,
-          "num_upcoming_shows": len([s for s in v.shows if s.start_time > datetime.now()])
-        } 
+        get_venue_dict(v)
         for v in Venue.query.filter(Venue.city==c[0], Venue.state==c[1]).all()
       ]
     } 
     for c in db.session.query(Venue.city, Venue.state).group_by(Venue.city, Venue.state).all()
   ]
 
-  print(cities)
-
   return render_template('pages/venues.html', areas=cities);
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for Hop should return "The Musical Hop".
-  # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+  search_term = request.form.get('search_term', '')
+
+  venues = [
+    get_venue_dict(v)
+    for v in Venue.query.filter(Venue.name.ilike(f'%{search_term}%')).all()
+  ]
+
   response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
+    "count": len(venues),
+    "data": venues
   }
-  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+
+  return render_template('pages/search_venues.html', results=response, search_term=search_term)
+
+def get_venue_dict(v):
+  return {
+    "id": v.id, 
+    "name": v.name,
+    "num_upcoming_shows": len([s for s in v.shows if s.start_time > datetime.now()])
+  }
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
@@ -197,7 +198,7 @@ def show_venue(venue_id):
     data["genres"] = [g.strip() for g in v.genres.split(",")]
 
   shows_query = db.session.query(Show).join(Artist, Show.venue_id==venue_id)
-  
+
   data["past_shows"] = [
     {
       "artist_id": s.artist_id,
