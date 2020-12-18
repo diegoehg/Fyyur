@@ -197,8 +197,6 @@ def show_venue(venue_id):
   if v.genres != None:
     data["genres"] = [g.strip() for g in v.genres.split(",")]
 
-  shows_query = db.session.query(Show).join(Artist, Show.venue_id==venue_id)
-
   data["past_shows"] = [
     {
       "artist_id": s.artist_id,
@@ -206,7 +204,7 @@ def show_venue(venue_id):
       "artist_image_link": s.artist.image_link,
       "start_time": s.start_time.isoformat()
     }
-    for s in shows_query.filter(Show.start_time<datetime.now()).all()
+    for s in v.shows if s.start_time < datetime.now()
   ]
   data["past_shows_count"] = len(data["past_shows"])
 
@@ -217,7 +215,7 @@ def show_venue(venue_id):
       "artist_image_link": s.artist.image_link,
       "start_time": s.start_time.isoformat()
     }
-    for s in shows_query.filter(Show.start_time>datetime.now()).all()
+    for s in v.shows if s.start_time > datetime.now()
   ]
   data["upcoming_shows_count"] = len(data["upcoming_shows"])
 
