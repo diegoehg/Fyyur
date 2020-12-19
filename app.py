@@ -179,7 +179,7 @@ def get_venue_dict(v):
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
-  v = Venue.query.get(venue_id)
+  v = Venue.query.get_or_404(venue_id)
 
   data={
     "id": v.id,
@@ -339,7 +339,7 @@ def show_artist(artist_id):
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
-  artist = Artist.query.filter_by(id=artist_id).first_or_404()
+  artist = Artist.query.get_or_404(artist_id)
   form = ArtistForm(obj=artist)
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
