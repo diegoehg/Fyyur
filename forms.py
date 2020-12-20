@@ -132,7 +132,6 @@ class ArtistForm(FlaskForm):
         choices=states_choices
     )
     phone = StringField(
-        # TODO implement validation logic for state
         'phone'
     )
     image_link = StringField(
@@ -143,8 +142,5 @@ class ArtistForm(FlaskForm):
         choices=genres_choices
     )
     facebook_link = StringField(
-        # TODO implement enum restriction
         'facebook_link', validators=[URL()]
     )
-
-# TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM

@@ -346,8 +346,29 @@ def edit_artist(artist_id):
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
-  # TODO: take values from the form submitted, and update existing
-  # artist record with ID <artist_id> using the new attributes
+  form = ArtistForm(request.form)
+
+  if not form.validate_on_submit():
+    flash(f'Data submitted is not valid')
+    return redirect(url_for('show_artist', artist_id=artist_id))
+
+  try:
+    artist = Artist.query.get_or_404(artist_id)
+    artist.name = form.name.data,
+    artist.city = form.city.data,
+    artist.state = form.state.data,
+    artist.phone = form.phone.data,
+    artist.genres = ",".join(form.genres.data),
+    artist.image_link = form.image_link.data,
+    artist.facebook_link = form.facebook_link.data
+    db.session.commit()
+
+  except:
+    flash('A database error ocurred while updating {form.name.data} data')
+    db.session.rollback()
+
+  finally:
+    db.session.close()
 
   return redirect(url_for('show_artist', artist_id=artist_id))
 
