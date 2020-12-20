@@ -361,17 +361,21 @@ def edit_artist_submission(artist_id):
 
   try:
     artist = Artist.query.get_or_404(artist_id)
-    artist.name = form.name.data,
-    artist.city = form.city.data,
-    artist.state = form.state.data,
-    artist.phone = form.phone.data,
-    artist.genres = ",".join(form.genres.data),
-    artist.image_link = form.image_link.data,
+
+    artist.name = form.name.data
+    artist.city = form.city.data
+    artist.state = form.state.data
+    artist.phone = form.phone.data
+    artist.genres = ",".join(form.genres.data)
+    artist.image_link = form.image_link.data
     artist.facebook_link = form.facebook_link.data
+
     db.session.commit()
 
+    flash(f'Artist {form.name.data} was successfully updated!')
+
   except:
-    flash('A database error ocurred while updating {form.name.data} data')
+    flash(f'An error occurred. Artist {form.name.data} could not be updated.')
     db.session.rollback()
 
   finally:
@@ -406,10 +410,10 @@ def edit_venue_submission(venue_id):
 
     db.session.commit()
 
-    flash(f'Venue {form.name.data} was successfully listed!')
+    flash(f'Venue {form.name.data} was successfully updated!')
 
   except:
-    flash(f'An error occurred. Venue {form.name.data} could not be listed.')
+    flash(f'An error occurred. Venue {form.name.data} could not be updated.')
     db.session.rollback()
 
   finally:
@@ -427,14 +431,35 @@ def create_artist_form():
 
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
-  # called upon submitting the new artist listing form
-  # TODO: insert form data as a new Venue record in the db, instead
-  # TODO: modify data to be the data object returned from db insertion
+  form = ArtistForm(request.form)
 
-  # on successful db insert, flash success
-  flash('Artist ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+  if not form.validate_on_submit():
+    flash(f'Data submitted is not valid')
+    return render_template('pages/home.html')
+
+  try:
+    artist = Artist(
+      name = form.name.data,
+      city = form.city.data,
+      state = form.state.data,
+      phone = form.phone.data,
+      genres = ",".join(form.genres.data),
+      image_link = form.image_link.data,
+      facebook_link = form.facebook_link.data
+    )
+  
+    db.session.add(artist)
+    db.session.commit()
+
+    flash(f'Artist {form.name.data} was successfully listed!')
+
+  except:
+    flash(f'An error occurred. Artist {form.name.data} could not be listed.')
+    db.session.rollback()
+
+  finally:
+    db.session.close()
+
   return render_template('pages/home.html')
 
 
