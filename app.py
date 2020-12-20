@@ -6,7 +6,7 @@ import json
 import dateutil.parser
 from datetime import datetime
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, Response, flash, redirect, url_for, jsonify
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -109,7 +109,7 @@ class Show(db.Model):
     artist_id:{self.artist_id},
     start_time:{self.start_time}
 >"""
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -265,12 +265,23 @@ def create_venue_submission():
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
-  # TODO: Complete this endpoint for taking a venue_id, and using
-  # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+  success = False
 
-  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-  # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+  try:
+    Venue.query.filter_by(id=venue_id).delete()
+    db.session.commit()
+    flash('The venue was deleted successfully')
+    success = True
+  
+  except:
+    flash('The venue could not be deleted')
+    success = False
+    db.session.rollback()
+
+  finally:
+    db.session.close()
+
+  return jsonify({'success': success})
 
 #  Artists
 #  ----------------------------------------------------------------

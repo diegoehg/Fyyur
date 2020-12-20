@@ -47,6 +47,21 @@
 	</div>
 </div>
 <section>
+    <div class="form-wrapper">
+        <div class="form-group">
+            <a href="/venues/{{ venue.id }}/edit">
+                <button type="button" class="btn btn-primary btn-lg btn-block" id="edit-venue-button">Edit Venue</button>
+            </a>
+        </div>
+
+        <div class="form-group">
+            <button type="button" class="btn btn-primary btn-lg btn-block btn-danger" onclick="delete_venue({{ venue.id }});">
+                Delete Venue
+            </button>
+        </div>
+    </div>
+</section>
+<section>
 	<h2 class="monospace">{{ venue.upcoming_shows_count }} Upcoming {% if venue.upcoming_shows_count == 1 %}Show{% else %}Shows{% endif %}</h2>
 	<div class="row">
 		{%for show in venue.upcoming_shows %}
@@ -74,6 +89,23 @@
 		{% endfor %}
 	</div>
 </section>
+
+<script>
+    function delete_venue(venue_id) {
+        fetch("/venues/" + venue_id, {
+            method: "DELETE"
+        })
+        .then(function(response) {
+            console.log(response);
+            return response.json();
+        })
+        .then(function(jsonResponse) {
+            console.log(jsonResponse);
+            if(jsonResponse.success)
+                window.location = '/';
+        });
+    }
+</script>
 
 {% endblock %}
 
