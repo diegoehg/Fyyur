@@ -252,10 +252,11 @@ def create_venue_submission():
     db.session.add(venue)
     db.session.commit()
 
-    flash('Venue ' + request.form['name'] + ' was successfully listed!')
+    flash(f'Venue {form.name.data} was successfully listed!')
   
   except:
     flash(f'An error occurred. Venue {form.name.data} could not be listed.')
+    db.session.rollback()
 
   finally:
     db.session.close()
@@ -386,8 +387,34 @@ def edit_venue(venue_id):
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
-  # TODO: take values from the form submitted, and update existing
-  # venue record with ID <venue_id> using the new attributes
+  form = VenueForm(request.form)
+
+  if not form.validate_on_submit():
+    flash('Data submitted is not valid')
+    return redirect(url_for('show_venue', venue_id=venue_id))
+
+  try:
+    venue = Venue.query.get_or_404(venue_id)
+    venue.name = form.name.data
+    venue.city = form.city.data
+    venue.state = form.state.data
+    venue.address = form.address.data
+    venue.phone = form.phone.data
+    venue.genres = ",".join(form.genres.data)
+    venue.image_link = form.image_link.data
+    venue.facebook_link = form.facebook_link.data
+
+    db.session.commit()
+
+    flash(f'Venue {form.name.data} was successfully listed!')
+
+  except:
+    flash(f'An error occurred. Venue {form.name.data} could not be listed.')
+    db.session.rollback()
+
+  finally:
+    db.session.close()
+
   return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Create Artist
