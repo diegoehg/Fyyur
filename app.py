@@ -232,24 +232,30 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
+  form = VenueForm(request.form)
+
+  if not form.validate_on_submit():
+    flash('Data submitted is not valid')
+    return render_template('pages/home.html')
+
   try:
-    v = Venue(
-      name = request.form.get('name', ''),
-      city = request.form.get('city', ''),
-      state = request.form.get('state', ''),
-      address = request.form.get('address', ''),
-      phone = request.form.get('name', ''),
-      genres = ",".join(request.form.getlist('genres')),
-      facebook_link = request.form.get('facebook_link', '')
+    venue = Venue(
+      name = form.name.data,
+      city = form.city.data,
+      state = form.state.data,
+      address = form.address.data,
+      phone = form.name.data,
+      genres = ",".join(form.genres.data),
+      facebook_link = form.facebook_link.data
     )
 
-    db.session.add(v)
+    db.session.add(venue)
     db.session.commit()
 
     flash('Venue ' + request.form['name'] + ' was successfully listed!')
   
   except:
-    flash(f'An error occurred. Venue {request.form.get("name","")} could not be listed.')
+    flash(f'An error occurred. Venue {form.name.data} could not be listed.')
 
   finally:
     db.session.close()
